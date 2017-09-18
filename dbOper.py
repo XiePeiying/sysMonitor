@@ -5,6 +5,7 @@
 
 
 import cx_Oracle
+import mysql.connector
 import logEvent
 import csv
 
@@ -16,6 +17,21 @@ def get_conn(username,password,hostname,port,dbname):
         return conn
     except Exception as err:
         print(str(err))
+
+def get_conn_mysql(username,pwd,hostname,port,dbname):
+    try:
+        conn = mysql.connector.connect(user=username,password=pwd,
+            host=hostname, database=dbname)
+        return conn
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+    else:
+        cnx.close()
 
 
 def get_column_name(conn,sql):
