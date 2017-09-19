@@ -10,10 +10,10 @@ import logEvent
 import csv
 
 
-def get_conn(username,password,hostname,port,dbname):
+def get_conn(username,pwd,hostname,port,dbname):
     dsn_tns = cx_Oracle.makedsn(hostname, port, service_name=dbname)
     try:
-        conn = cx_Oracle.connect(username,password,dsn_tns)
+        conn = cx_Oracle.connect(username,pwd,dsn_tns)
         return conn
     except Exception as err:
         print(str(err))
@@ -81,15 +81,30 @@ def dblog(logfile_name, stats_tag, stats_name, stats_ratio=0, isnumber=True, *, 
 
 
 if __name__ == '__main__':
-    username = 'cjcl'
-    password = 'cjclpassword'
-    hostname = '192.168.1.112'
-    port     = '1521'
-    dbname   = 'snpcjdb'
-    sql      = 'select * from dba_users'
-    connect = get_conn(username,password,hostname,port,dbname)
+    dbconfig = {
+        'username' : 'sysmonitor',
+        'pwd'      : 'sysmonitor',
+        'hostname' : '192.168.1.112',
+        'port'     : '3306',
+        'dbname'   : 'sysmonitor'
+    }
+    dbconfig_ora = {
+        'username' : 'scott',
+        'pwd'      : 'tiger',
+        'hostname' : '192.168.1.112',
+        'port'     : '1521',
+        'dbname'   : 'testdb1'
+    }
+
+    sql      = 'select * from system_info'
+    sql_ora  = 'select * from DEPT'
+    connect = get_conn_mysql(**dbconfig)
 
     #for i
     #print(get_stat_result(cur,sql))
-    print(get_column_name(connect,sql))
-    print(get_stat_result(connect,sql))
+    #print(get_column_name(connect,sql))
+    #print(get_stats_result(connect,sql))
+    connect.close()
+    connect_o = get_conn(**dbconfig_ora)
+    print(get_column_name(connect_o,sql_ora))
+    print(get_stats_result(connect_o,sql_ora))
